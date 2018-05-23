@@ -58,6 +58,13 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate {
         if let url = NSURL(string: profilePicURL) {
             if let data = NSData(contentsOf: url as URL) {
                 self.profileImage.image = UIImage(data: data as Data)
+                
+                // Make round profile image
+                self.profileImage.layer.borderWidth = 1.0
+                self.profileImage.layer.masksToBounds = false
+                self.profileImage.layer.borderColor = UIColor.white.cgColor
+                self.profileImage.layer.cornerRadius = self.profileImage.frame.size.width / 2
+                self.profileImage.clipsToBounds = true
             }
         }
     }
@@ -94,7 +101,7 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate {
             let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
 
             self.mapView.showsUserLocation = true
-            self.mapAddressLabel.text = "SEARCH AREA: YOUR CURRENT LOCATION"
+            self.mapAddressLabel.text = "\(firstname) \(lastname)\nSearch Area: Your Current Location"
 
             // Annotate
             mapAnnotation.coordinate = center
@@ -124,7 +131,7 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate {
             self.mapView.setRegion(newRegion, animated: true)
             self.mapView.addAnnotation(mapAnnotation)
             
-            self.mapAddressLabel.text = "SEACH AREA: \(address)"
+            self.mapAddressLabel.text = "\(firstname) \(lastname)\nSearch Area: \(address)"
         }
     }
     

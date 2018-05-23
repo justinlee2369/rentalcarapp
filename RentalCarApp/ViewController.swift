@@ -18,11 +18,15 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
     @IBOutlet weak var activityIndicatorView: UIActivityIndicatorView!
     @IBOutlet weak var fbDescriptionLabel: UILabel!
     @IBOutlet weak var loginButton: FBSDKLoginButton!
+    @IBOutlet weak var backgroundImageView: UIImageView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        self.navigationController?.isNavigationBarHidden = true
+        
+        // FB
         self.configureFacebook()
         activityIndicatorView.hidesWhenStopped = true
     }
@@ -49,7 +53,6 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
                 vc?.setPicURL(urlString: ((dict["picture"] as! [String : AnyObject])["data"]?["url"]) as! String)
             }
         }
-
     }
     
     func configureFacebook()
@@ -110,9 +113,6 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
         print ("ABOUT TO LOGIN")
         return true
     }
-    
-    
-
 
 }
 
