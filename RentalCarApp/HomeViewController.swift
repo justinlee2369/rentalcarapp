@@ -11,7 +11,7 @@ import UIKit
 import CoreLocation
 import MapKit
 
-let apiKey = "IN0qI3YNFCPpCSQvqntxvGDn4RGp3Min"
+let apiKey = ""
 let apiRental = "https://api.sandbox.amadeus.com/v1.2/cars/search-circle?apikey=\(apiKey)&"
 
 // User's specified address
@@ -20,6 +20,8 @@ var city : String = ""
 var state : String = ""
 var location = CLLocationCoordinate2D()
 var newLocationSetFlag = false
+var pickupDateAsString : String = ""
+var dropoffDateAsString : String = ""
 
 // User data
 var firstname : String = ""
@@ -69,7 +71,8 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate {
         }
     }
     @IBAction func findCarButtonPushed(_ sender: Any) {
-        self.getSearchResults()
+        self.performSegue(withIdentifier: "PickUpDateSegue", sender: self)
+//        self.getSearchResults()
     }
     
     @IBAction func changeLocationButtonPushed(_ sender: Any) {
@@ -105,7 +108,6 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate {
 
             // Annotate
             mapAnnotation.coordinate = center
-            mapAnnotation.title = firstname + " " + lastname
             
             self.mapView.setRegion(region, animated: true)
             self.mapView.addAnnotation(mapAnnotation)
@@ -131,7 +133,7 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate {
             self.mapView.setRegion(newRegion, animated: true)
             self.mapView.addAnnotation(mapAnnotation)
             
-            self.mapAddressLabel.text = "\(firstname) \(lastname)\nSearch Area: \(address)"
+            self.mapAddressLabel.text = "\(firstname) \(lastname)\nSearch Area: \(address) \(city), \(state)"
         }
     }
     

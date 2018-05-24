@@ -23,4 +23,8 @@ class CityViewController : UIViewController {
             self.performSegue(withIdentifier: "ShowStateSegue", sender: self)
         }
     }
+    
+    @IBAction func backButtonPushed(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
+    }
 }

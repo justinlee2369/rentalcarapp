@@ -12,6 +12,8 @@
 		28A1422E20B544880095B7A8 /* AddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A1422D20B544880095B7A8 /* AddressViewController.swift */; };
 		28A1423020B545DC0095B7A8 /* CityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A1422F20B545DC0095B7A8 /* CityViewController.swift */; };
 		28AD61AC20B6343000EB61DB /* CarSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AD61AB20B6343000EB61DB /* CarSearchViewController.swift */; };
+		28AD61AE20B65E9800EB61DB /* PickUpDateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AD61AD20B65E9800EB61DB /* PickUpDateViewController.swift */; };
+		28AD61B020B65EB700EB61DB /* DropOffDateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28AD61AF20B65EB700EB61DB /* DropOffDateViewController.swift */; };
 		28BAF96420B129D500999A6D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BAF96320B129D500999A6D /* AppDelegate.swift */; };
 		28BAF96620B129D500999A6D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28BAF96520B129D500999A6D /* ViewController.swift */; };
 		28BAF96920B129D500999A6D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28BAF96720B129D500999A6D /* Main.storyboard */; };
@@ -50,6 +52,8 @@
 		28A1422D20B544880095B7A8 /* AddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressViewController.swift; sourceTree = "<group>"; };
 		28A1422F20B545DC0095B7A8 /* CityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityViewController.swift; sourceTree = "<group>"; };
 		28AD61AB20B6343000EB61DB /* CarSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarSearchViewController.swift; sourceTree = "<group>"; };
+		28AD61AD20B65E9800EB61DB /* PickUpDateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickUpDateViewController.swift; sourceTree = "<group>"; };
+		28AD61AF20B65EB700EB61DB /* DropOffDateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropOffDateViewController.swift; sourceTree = "<group>"; };
 		28BAF96020B129D500999A6D /* RentalCarApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RentalCarApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28BAF96320B129D500999A6D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		28BAF96520B129D500999A6D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -151,6 +155,8 @@
 				28BAF96520B129D500999A6D /* ViewController.swift */,
 				28AD61AB20B6343000EB61DB /* CarSearchViewController.swift */,
 				28BAF96720B129D500999A6D /* Main.storyboard */,
+				28AD61AD20B65E9800EB61DB /* PickUpDateViewController.swift */,
+				28AD61AF20B65EB700EB61DB /* DropOffDateViewController.swift */,
 				28BAF99420B2AFDD00999A6D /* HomeViewController.swift */,
 				28A1422D20B544880095B7A8 /* AddressViewController.swift */,
 				28A1422F20B545DC0095B7A8 /* CityViewController.swift */,
@@ -419,11 +425,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				28BAF96620B129D500999A6D /* ViewController.swift in Sources */,
+				28AD61AE20B65E9800EB61DB /* PickUpDateViewController.swift in Sources */,
 				28BAF96420B129D500999A6D /* AppDelegate.swift in Sources */,
 				28BAF96C20B129D500999A6D /* RentalCarApp.xcdatamodeld in Sources */,
 				28AD61AC20B6343000EB61DB /* CarSearchViewController.swift in Sources */,
 				28A1422E20B544880095B7A8 /* AddressViewController.swift in Sources */,
 				28BAF99520B2AFDD00999A6D /* HomeViewController.swift in Sources */,
+				28AD61B020B65EB700EB61DB /* DropOffDateViewController.swift in Sources */,
 				28A1422C20B53E860095B7A8 /* StateViewController.swift in Sources */,
 				28A1423020B545DC0095B7A8 /* CityViewController.swift in Sources */,
 			);
