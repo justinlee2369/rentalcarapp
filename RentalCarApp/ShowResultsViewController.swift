@@ -9,18 +9,28 @@
 import Foundation
 import UIKit
 
+let apiKey = ""
+let apiRental = "https://api.sandbox.amadeus.com/v1.2/cars/search-circle?apikey=\(apiKey)&"
+
 class ShowResultsViewController : UIViewController {
+    
+    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
+    
+    // Parameters
+    var radiusInKilometers = 32 // 20ish miles
+    var pickUpDate = "2018-07-07"
+    var dropOffDate = "2018-07-08"
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.startAnimating()
+        getSearchResults()
     }
     
     func getSearchResults() {
-        //GET /v1.2/cars/search-circle?apikey=IN0qI3YNFCPpCSQvqntxvGDn4RGp3Min&latitude=35.1504&longitude=-114.57632&radius=42&pick_up=2018-06-07&drop_off=2018-06-08
-        let latitude = self.currentLocation.latitude
-        let longitude = self.currentLocation.longitude
         
-        let parameters : String! = "latitude=\(latitude)&longitude=\(longitude)&radius=\(self.radiusInKilometers)&pick_up=\(self.pickUpDate)&drop_off=\(self.dropOffDate)"
+        let parameters : String! = "latitude=\(RentalCarApp.location.latitude)&longitude=\(RentalCarApp.location.longitude)&radius=\(RentalCarApp.radius)&pick_up=\(RentalCarApp.pickupDateAsString)&drop_off=\(RentalCarApp.dropoffDateAsString)"
         
         let urlString = apiRental + parameters
         
@@ -38,6 +48,12 @@ class ShowResultsViewController : UIViewController {
                 else
                 {
                     print(json?["results"])
+                    
+                    // Needs to be on main thread
+                    DispatchQueue.main.async {
+                        self.loadingIndicator.stopAnimating()
+                    }
+                    
                 }
             }
             else

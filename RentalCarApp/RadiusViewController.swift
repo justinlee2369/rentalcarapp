@@ -14,12 +14,6 @@ class RadiusViewController : UIViewController {
     @IBOutlet weak var distanceSlider: UISlider!
     @IBOutlet weak var distanceInfoLabel: UILabel!
     
-    // Parameters
-    var initialLocationSetFlag = false
-    var radiusInKilometers = 32 // 20ish miles
-    var pickUpDate = "2018-07-07"
-    var dropOffDate = "2018-07-08"
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         distanceInfoLabel.text = getValueFromSlider() + " miles"

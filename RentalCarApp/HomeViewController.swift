@@ -11,9 +11,6 @@ import UIKit
 import CoreLocation
 import MapKit
 
-let apiKey = "IN0qI3YNFCPpCSQvqntxvGDn4RGp3Min"
-let apiRental = "https://api.sandbox.amadeus.com/v1.2/cars/search-circle?apikey=\(apiKey)&"
-
 // User's specified address
 var address : String = ""
 var city : String = ""
@@ -38,7 +35,8 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate, UINaviga
     
     // Location 
     let locationManager = CLLocationManager()
-    
+    var initialLocationSetFlag = false
+
     // Map
     var mapAnnotation = MKPointAnnotation()
     
