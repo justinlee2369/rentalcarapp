@@ -25,6 +25,13 @@ class CityViewController : UIViewController {
     }
     
     @IBAction func backButtonPushed(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
+        if let navController = self.navigationController {
+            for controller in navController.viewControllers {
+                if controller is AddressViewController {
+                    navController.popToViewController(controller, animated:true)
+                    break
+                }
+            }
+        }
     }
 }

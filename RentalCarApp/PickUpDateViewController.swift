@@ -40,4 +40,15 @@ class PickUpDateViewController : UIViewController {
             }
         }
     }
+    
+    @IBAction func backButtonPushed(_ sender: Any) {
+        if let navController = self.navigationController {
+            for controller in navController.viewControllers {
+                if controller is HomeViewController {
+                    navController.popToViewController(controller, animated:true)
+                    break
+                }
+            }
+        }
+    }
 }

@@ -13,6 +13,10 @@ class AddressViewController : UIViewController {
     
     @IBOutlet weak var addressTextField: UITextField!
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
     @IBAction func nextButtonPushed(_ sender: Any) {
         if (addressTextField.text == "") {
             let alert = UIAlertController(title: "Not sure what your address is?", message: "That's fine! Just select skip if you're unsure.", preferredStyle: .alert)
@@ -32,19 +36,14 @@ class AddressViewController : UIViewController {
     }
     
     @IBAction func backButtonPushed(_ sender: Any) {
-        self.navigationController?.popViewController(animated: true)
+        if let navController = self.navigationController {
+            for controller in navController.viewControllers {
+                if controller is HomeViewController {
+                    navController.popToViewController(controller, animated:true)
+                    break
+                }
+            }
+        }
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        let border = CALayer()
-        let width = CGFloat(2.0)
-        border.borderColor = UIColor.darkGray.cgColor
-        border.frame = CGRect(x: 0, y: addressTextField.frame.size.height - width, width:  addressTextField.frame.size.width, height: addressTextField.frame.size.height)
-        
-        border.borderWidth = width
-        addressTextField.layer.addSublayer(border)
-        addressTextField.layer.masksToBounds = true
-    }
+
 }

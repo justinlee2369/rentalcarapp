@@ -18,6 +18,7 @@ class StateViewController : UIViewController, UIPickerViewDelegate, UIPickerView
     let stateArray = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhoda Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
     
     var stateSelected : String = ""
+    var userSelectedFlag = false
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -35,17 +36,40 @@ class StateViewController : UIViewController, UIPickerViewDelegate, UIPickerView
         super.viewDidLoad()
         stateSelector.delegate = self
         activityIndicator.hidesWhenStopped = true
+        activityIndicator.stopAnimating()
+        
+        let defaultStateIndex = stateArray.index(of: "California")!
+        stateSelector.selectRow(defaultStateIndex, inComponent: 0, animated: true)
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent  component: Int) {
+        userSelectedFlag = true
         stateSelected = self.stateArray[row] as String
         print(stateSelected)
     }
     
+    @IBAction func backButtonPushed(_ sender: Any) {
+        if let navController = self.navigationController {
+            for controller in navController.viewControllers {
+                if controller is CityViewController {
+                    navController.popToViewController(controller, animated:true)
+                    break
+                }
+            }
+        }    }
+    
     @IBAction func doneButtonPressed(_ sender: Any) {
         activityIndicator.startAnimating()
-        state = self.stateSelected
         
+        // Grab default value if delegate method wasn't triggered
+        if (userSelectedFlag == false) {
+            self.stateSelected = stateArray[(stateSelector.selectedRow(inComponent: 0))]
+            print (self.stateSelected)
+        }
+        
+        // Set global
+        RentalCarApp.state = self.stateSelected
+
         let fullAddressString = address + " " + city + " " + state
         print (fullAddressString)
         
@@ -64,12 +88,19 @@ class StateViewController : UIViewController, UIPickerViewDelegate, UIPickerView
                     print(lat)
                     print(lon)
                     
-                    location = CLLocationCoordinate2D(latitude: lat!, longitude: lon!)
+                    RentalCarApp.location = CLLocationCoordinate2D(latitude: lat!, longitude: lon!)
                     newLocationSetFlag = true
                     
                     self.activityIndicator.stopAnimating()
-
-                    self.performSegue(withIdentifier: "BackToHomeSegue", sender: self)
+                    
+                    if let navController = self.navigationController {
+                        for controller in navController.viewControllers {
+                            if controller is HomeViewController {
+                                navController.popToViewController(controller, animated:false)
+                                break
+                            }
+                        }
+                    }
                 }
             }
         }

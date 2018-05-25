@@ -11,7 +11,7 @@ import UIKit
 import CoreLocation
 import MapKit
 
-let apiKey = ""
+let apiKey = "IN0qI3YNFCPpCSQvqntxvGDn4RGp3Min"
 let apiRental = "https://api.sandbox.amadeus.com/v1.2/cars/search-circle?apikey=\(apiKey)&"
 
 // User's specified address
@@ -22,40 +22,40 @@ var location = CLLocationCoordinate2D()
 var newLocationSetFlag = false
 var pickupDateAsString : String = ""
 var dropoffDateAsString : String = ""
+var radius : String = ""
 
 // User data
 var firstname : String = ""
 var lastname : String = ""
 var profilePicURL : String = ""
 
-class HomeViewController : UIViewController, CLLocationManagerDelegate {
+class HomeViewController : UIViewController, CLLocationManagerDelegate, UINavigationControllerDelegate {
     
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var mapAddressLabel: UILabel!
+    @IBOutlet weak var mapActivityIndicator: UIActivityIndicatorView!
     
-    // Parameters
+    // Location 
     let locationManager = CLLocationManager()
-    var currentLocation = CLLocationCoordinate2D()
-    var initialLocationSetFlag = false
-    var radiusInKilometers = 32 // 20ish miles
-    var pickUpDate = "2018-07-07"
-    var dropOffDate = "2018-07-08"
-
+    
+    // Map
+    var mapAnnotation = MKPointAnnotation()
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        self.mapActivityIndicator.startAnimating()
+        self.setupLocationManager()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViewComponents()
         self.setupLocationManager()
+        self.mapActivityIndicator.hidesWhenStopped = true
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-    }
-    
-    func setViewComponents(){        
+
+    func setViewComponents(){
         // Set photo image
         if let url = NSURL(string: profilePicURL) {
             if let data = NSData(contentsOf: url as URL) {
@@ -71,13 +71,14 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate {
         }
     }
     @IBAction func findCarButtonPushed(_ sender: Any) {
-        self.performSegue(withIdentifier: "PickUpDateSegue", sender: self)
+        let pickupVC = self.storyboard?.instantiateViewController(withIdentifier: "PickUpDateViewController") as! PickUpDateViewController
+        self.navigationController?.pushViewController(pickupVC, animated: true)
 //        self.getSearchResults()
     }
     
     @IBAction func changeLocationButtonPushed(_ sender: Any) {
-        // Segue
-//        self.changeLocation()
+        let addressVC = self.storyboard?.instantiateViewController(withIdentifier: "AddressViewController") as! AddressViewController
+        self.navigationController?.pushViewController(addressVC, animated: true)
     }
     
     func setupLocationManager() {
@@ -90,8 +91,6 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
-        var mapAnnotation = MKPointAnnotation()
         
         if (newLocationSetFlag == false)
         {
@@ -112,12 +111,16 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate {
             self.mapView.setRegion(region, animated: true)
             self.mapView.addAnnotation(mapAnnotation)
             
-            self.currentLocation = coordinate
+            // Set global location
+            RentalCarApp.location = coordinate
+            
             self.initialLocationSetFlag = true
+            locationManager.stopUpdatingLocation()
         }
         else
         {
             // Clear old annotations
+            mapAnnotation.title = ""
             self.mapView.removeAnnotation(mapAnnotation)
             
             // Set new location for map
@@ -127,46 +130,20 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate {
         
             // Annotate new location
             mapAnnotation.coordinate = newCenter
-            mapAnnotation.title = "\(firstname)'s New Search Location"
             
             // Redraw map
             self.mapView.setRegion(newRegion, animated: true)
             self.mapView.addAnnotation(mapAnnotation)
             
             self.mapAddressLabel.text = "\(firstname) \(lastname)\nSearch Area: \(address) \(city), \(state)"
+            
+            locationManager.stopUpdatingLocation()
         }
+        
+        self.mapActivityIndicator.stopAnimating()
     }
     
-    func getSearchResults() {
-        //GET /v1.2/cars/search-circle?apikey=IN0qI3YNFCPpCSQvqntxvGDn4RGp3Min&latitude=35.1504&longitude=-114.57632&radius=42&pick_up=2018-06-07&drop_off=2018-06-08
-        let latitude = self.currentLocation.latitude
-        let longitude = self.currentLocation.longitude
-            
-        let parameters : String! = "latitude=\(latitude)&longitude=\(longitude)&radius=\(self.radiusInKilometers)&pick_up=\(self.pickUpDate)&drop_off=\(self.dropOffDate)"
-            
-        let urlString = apiRental + parameters
-        
-        print (urlString)
-        
-        let dataTask = URLSession.shared.dataTask(with: URL.init(string: urlString)!) { (data, response, error) in
-            if ((data) != nil)
-            {
-                let json = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String:Any]
-                
-                if (json?["results"]) == nil  {
-//                    fail((json?["message"] as? String) ?? "Unknown server error")
-                    print(json?["message"])
-                }
-                else
-                {
-                    print(json?["results"])
-                }
-            }
-            else
-            {
-            }
-        }
-        dataTask.resume()
+    @IBAction func signOutButtonPushed(_ sender: Any) {
     }
     
     func setFirstname(fname : String)

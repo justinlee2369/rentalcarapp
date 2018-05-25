@@ -21,9 +21,23 @@ class DropOffDateViewController : UIViewController {
         dropOffDatePicker.minimumDate = pickupDate as Date
     }
     
-    @IBAction func doneButtonPushed(_ sender: Any) {
+    @IBAction func nextButtonPushed(_ sender: Any) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         RentalCarApp.dropoffDateAsString = dateFormatter.string(from: self.dropOffDatePicker.date)
+        
+        // Segue
+        self.performSegue(withIdentifier: "ShowRadiusSegue", sender: self)
+    }
+    
+    @IBAction func backButtonPushed(_ sender: Any) {
+        if let navController = self.navigationController {
+            for controller in navController.viewControllers {
+                if controller is PickUpDateViewController {
+                    navController.popToViewController(controller, animated:true)
+                    break
+                }
+            }
+        }
     }
 }
