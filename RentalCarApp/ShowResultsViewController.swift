@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-let apiKey = "IN0qI3YNFCPpCSQvqntxvGDn4RGp3Min"
+let apiKey = ""
 let apiRental = "https://api.sandbox.amadeus.com/v1.2/cars/search-circle?apikey=\(apiKey)&"
 
 class ShowResultsViewController : UIViewController, UITableViewDataSource, UITableViewDelegate {
