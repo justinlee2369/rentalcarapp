@@ -17,6 +17,9 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
     var totalCars = 0
     var rentalDataArray: [(location: Location, address: Address, provider: Provider, cars: Cars)] = []
     var rowSelected = 0
+    var providerSet : Set<String> = []
+    var providerMap : [String: [Cars]] = [:]
+
     
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var carTableView: UITableView!
@@ -40,20 +43,17 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
         let city: String?
         let country: String?
         let line1: String?
-//        let region: String?
         
         init?(json: [String: Any]) {
             guard let city = json["city"] as? String,
                 let country = json["country"] as? String,
                 let line1 = json["line1"] as? String
-//                let region = json["region"] as? String
                 else {
                     return nil
                 }
             self.city = city
             self.country = country
             self.line1 = line1
-//            self.region = region
         }
     }
     
@@ -89,18 +89,16 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
         }
     }
     
+    
     struct Rates : Decodable {
         let price: Price?
-        let type: String?
         
-        init?(json: [String: Any]) {
-            guard let price = json["price"] as? [String: Any],
-                let type = json["type"] as? String
+        init?(json: Array<[String: Any]>) {
+            guard let price = json[0]["price"] as? [String: Any]
             else {
                 return nil
             }
             self.price = Price(json: price)
-            self.type = type
         }
     }
     
@@ -137,32 +135,31 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
     // Cars properties
     struct Cars : Decodable {
         let estimated_total: EstimatedTotal?
-//        let rates: Rates?
+        let rates: Rates?
         let vehicle_info: VehicleInfo?
         
         init?(json: [String: Any]) {
-            print(json["vehicle_info"] as! [String:Any])
             guard let estimated_total = json["estimated_total"] as? [String: String],
-//            let rates = json["rates"] as? [String: Any],
+            let rates = json["rates"] as? Array<[String: Any]>,
             let vehicle_info = json["vehicle_info"] as? [String:Any]
                 else {
                     return nil
                 }
             
             self.estimated_total = EstimatedTotal(json: estimated_total)
-//            self.rates = Rates(json: rates)
+            self.rates = Rates(json: rates)
             self.vehicle_info = VehicleInfo(json: vehicle_info)
         }
     }
     
     // Location properties
     struct Location : Decodable {
-        let latitude: Float?
-        let longitude: Float?
+        let latitude: Double?
+        let longitude: Double?
         
         init?(json: [String:Any]) {
-            guard let latitude = json["latitude"] as? Float,
-                let longitude = json["longitude"] as? Float
+            guard let latitude = json["latitude"] as? Double,
+                let longitude = json["longitude"] as? Double
                 else {
                     return nil
                 }
@@ -206,7 +203,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let carController = segue.destination as? CarDetailsViewController {
             carController.vehicleCategory = (self.rentalDataArray[self.rowSelected].cars.vehicle_info?.category)!
-            carController.price = (self.rentalDataArray[self.rowSelected].cars.estimated_total?.amount)!
+            carController.totalPrice = (self.rentalDataArray[self.rowSelected].cars.estimated_total?.amount)!
             carController.companyName = (self.rentalDataArray[self.rowSelected].provider.company_name)!
             carController.addressStreet = (self.rentalDataArray[self.rowSelected].address.line1)!
             carController.city = (self.rentalDataArray[self.rowSelected].address.city)!
@@ -214,20 +211,38 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
             carController.bodyStyle = (self.rentalDataArray[self.rowSelected].cars.vehicle_info?.type)!
             carController.fuel = (self.rentalDataArray[self.rowSelected].cars.vehicle_info?.fuel)!
             carController.airConditioning = (self.rentalDataArray[self.rowSelected].cars.vehicle_info?.air_conditioning)!
-            
-        // ADD LOCATION and maybe ac???????!?!?!?!?!?
-            
+            carController.location.latitude = (self.rentalDataArray[self.rowSelected].location.latitude)!
+            carController.location.longitude = (self.rentalDataArray[self.rowSelected].location.longitude)!
+            carController.dailyPrice = (self.rentalDataArray[self.rowSelected].cars.rates?.price?.amount)!
         }
         
     }
     
     // MARK: TableView
-
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+    
+     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if(!self.providerMap.isEmpty)
+        {
+            return Array(self.providerMap.keys)[section]
+        }
+        else
+        {
+            return "Type"
+        }
     }
+        
+    func numberOfSectionsInTableView(in tableView: UITableView) -> Int {
+        if (self.providerSet.isEmpty) {
+            return 1
+        }
+        else {
+            return self.providerSet.count
+        }
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.totalCars
+
+            return self.totalCars
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -275,22 +290,15 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
                 
                 else
                 {
-                    print(json!["results"])
-                    
                     let branchesArray = json!["results"]
            
                     for eachBranch in branchesArray!
                     {
                         let location = Location(json: eachBranch["location"] as! [String : Any])
-                        print (location?.latitude)
                         
                         let address = Address(json: eachBranch["address"] as! [String : Any])
-                        print(address?.city)
                         
                         let provider = Provider(json: eachBranch["provider"] as! [String : Any])
-                        print (provider?.company_name)
-                        
-
                         
                         let carArray = eachBranch["cars"] as! Array<[String:Any]>
                         for cars in carArray {
@@ -298,11 +306,21 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
                             // Increment car count
                             self.totalCars+=1
                             
-                            let carInfo = Cars(json: cars as! [String : Any])
-                            print(carInfo?.estimated_total?.amount)
+                            let carInfo = Cars(json: cars)
                             
                             self.rentalDataArray.append((location: location!, address: address!, provider: provider!, cars: carInfo!))
+                            
+                            var mapCarArray = self.providerMap[(provider?.company_name)!] ?? []
+                            mapCarArray.append(carInfo!)
+                            self.providerMap[(provider?.company_name)!!] = mapCarArray
                         }
+                        
+                        if (!self.providerSet.contains((provider?.company_name)!))
+                        {
+                            self.providerSet.insert((provider?.company_name)!)
+                        }
+                        
+
                     }
 
 

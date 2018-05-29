@@ -21,6 +21,9 @@ var pickupDateAsString : String = ""
 var dropoffDateAsString : String = ""
 var radius : String = ""
 
+// User's initial location
+var initialLocation = CLLocationCoordinate2D()
+
 // User data
 var firstname : String = ""
 var lastname : String = ""
@@ -52,7 +55,7 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate, UINaviga
         self.setupLocationManager()
         self.mapActivityIndicator.hidesWhenStopped = true
     }
-
+    
     func setViewComponents(){
         // Set photo image
         if let url = NSURL(string: profilePicURL) {
@@ -112,7 +115,11 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate, UINaviga
             // Set global location
             RentalCarApp.location = coordinate
             
-            self.initialLocationSetFlag = true
+            if (!self.initialLocationSetFlag) {
+                RentalCarApp.initialLocation = coordinate
+                self.initialLocationSetFlag = true
+            }
+            
             locationManager.stopUpdatingLocation()
         }
         else
@@ -133,7 +140,7 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate, UINaviga
             self.mapView.setRegion(newRegion, animated: true)
             self.mapView.addAnnotation(mapAnnotation)
             
-            self.mapAddressLabel.text = "\(firstname) \(lastname)\nSearch Area: \(address) \(city), \(state)"
+            self.mapAddressLabel.text = "\(firstname) \(lastname)\nSearch Area:\n\(address) \(city), \(state)"
             
             locationManager.stopUpdatingLocation()
         }
@@ -142,6 +149,16 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate, UINaviga
     }
     
     @IBAction func signOutButtonPushed(_ sender: Any) {
+        if let navController = self.navigationController {
+            for controller in navController.viewControllers {
+                if controller is ViewController {
+                    let vc = controller as? ViewController
+                    vc?.loginManager.logOut()
+                    navController.popToViewController(controller, animated:true)
+                    break
+                }
+            }
+        }
     }
     
     func setFirstname(fname : String)

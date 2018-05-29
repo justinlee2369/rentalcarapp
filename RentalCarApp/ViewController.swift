@@ -15,6 +15,8 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
     var dict : [String : AnyObject]!
     var fbUserDataSet = false
     var userDefaults = UserDefaults()
+    let loginManager = FBSDKLoginManager()
+
     
     @IBOutlet weak var activityIndicatorView: UIActivityIndicatorView!
     @IBOutlet weak var fbDescriptionLabel: UILabel!
@@ -36,6 +38,9 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
         if AccessToken.current != nil {
             // User is logged in, use 'accessToken' here
         }
+        else {
+            self.fbDescriptionLabel.isHidden = false
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -45,8 +50,6 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let identifier = segue.identifier {
-            print (identifier)
-            print (self.fbUserDataSet)
             if (identifier == "HomeViewSegue" && self.fbUserDataSet == true) {
                 let vc = segue.destination as? HomeViewController
                 vc?.setFirstname(fname: dict["first_name"] as! String)
@@ -70,7 +73,6 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
             FBSDKGraphRequest.init(graphPath: "me", parameters: ["fields": "first_name, last_name, picture.type(large)"]).start(completionHandler: {(connection, result, error) -> Void in
                 if (error == nil){
                     self.dict = result as! [String : AnyObject]
-                    print(self.dict)
                     self.fbUserDataSet = true
                     completion(true)
                 }
@@ -100,7 +102,6 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
      */
     func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!)
     {
-        print ("LOGOUT")
         fbDescriptionLabel.isHidden = false
     }
     
@@ -110,7 +111,6 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
      - Returns: YES if the login should be allowed to proceed, NO otherwise
      */
     func loginButtonWillLogin(_ loginButton: FBSDKLoginButton!) -> Bool {
-        print ("ABOUT TO LOGIN")
         return true
     }
 

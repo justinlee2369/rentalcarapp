@@ -9,11 +9,13 @@
 import Foundation
 import UIKit
 import CoreLocation
+import MapKit
 
 class CarDetailsViewController : UIViewController {
     
     var vehicleCategory: String = ""
-    var price: String = ""
+    var dailyPrice : String = ""
+    var totalPrice: String = ""
     var companyName: String = ""
     
     var addressStreet: String = ""
@@ -24,9 +26,9 @@ class CarDetailsViewController : UIViewController {
     var transmission: String = ""
     var bodyStyle: String = ""
     var fuel: String = ""
-    
+
     var airConditioning : Int = 1
-    
+        
     // MARK: IBOutlets
     
     @IBOutlet weak var categoryLabel: UILabel!
@@ -37,6 +39,7 @@ class CarDetailsViewController : UIViewController {
     @IBOutlet weak var fuelLabel: UILabel!
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var airConditioningLabel: UILabel!
+    @IBOutlet weak var dailyPriceLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,17 +58,21 @@ class CarDetailsViewController : UIViewController {
     }
     
     @IBAction func navigateButtonPushed(_ sender: Any) {
-        
+        let coordinate = CLLocationCoordinate2DMake(self.location.latitude, self.location.longitude)
+        let mapItem = MKMapItem(placemark: MKPlacemark(coordinate: coordinate, addressDictionary:nil))
+        mapItem.name = companyName
+        mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeDriving])
     }
     
     func setViewComponents() {
         self.categoryLabel.text = vehicleCategory
-        self.priceLabel.text = "$\(price)"
+        self.priceLabel.text = "$\(totalPrice)"
         self.companyLabel.text = companyName
         self.transmissionLabel.text = transmission
         self.bodyStyleLabel.text = bodyStyle
         self.fuelLabel.text = fuel
         self.addressLabel.text = "\(addressStreet)\n\(city)"
+        self.dailyPriceLabel.text = "$\(dailyPrice)"
         
         if (airConditioning == 1) {
             self.airConditioningLabel.text = "Yes"
