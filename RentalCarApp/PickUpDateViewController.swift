@@ -15,6 +15,7 @@ class PickUpDateViewController : UIViewController {
     var pickupDate = Date()
     
     override func viewDidLoad() {
+        
         // Get the date
         let currentDate = Date()
         

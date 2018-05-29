@@ -14,6 +14,7 @@ import FBSDKLoginKit
 class ViewController: UIViewController, FBSDKLoginButtonDelegate {
     var dict : [String : AnyObject]!
     var fbUserDataSet = false
+    var userDefaults = UserDefaults()
     
     @IBOutlet weak var activityIndicatorView: UIActivityIndicatorView!
     @IBOutlet weak var fbDescriptionLabel: UILabel!
@@ -86,11 +87,11 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!)
     {
         self.getFBUserData(completion: {(success) -> Void in
+            
             self.activityIndicatorView.stopAnimating()
             self.performSegue(withIdentifier: "HomeViewSegue", sender: self)
         })
         fbDescriptionLabel.isHidden = true
-        print ("LOGIN BUTTON")
     }
     
     /**
@@ -109,7 +110,6 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
      - Returns: YES if the login should be allowed to proceed, NO otherwise
      */
     func loginButtonWillLogin(_ loginButton: FBSDKLoginButton!) -> Bool {
-        // Segue and return true
         print ("ABOUT TO LOGIN")
         return true
     }

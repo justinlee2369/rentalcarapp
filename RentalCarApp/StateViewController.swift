@@ -56,7 +56,8 @@ class StateViewController : UIViewController, UIPickerViewDelegate, UIPickerView
                     break
                 }
             }
-        }    }
+        }
+    }
     
     @IBAction func doneButtonPressed(_ sender: Any) {
         activityIndicator.startAnimating()
@@ -85,8 +86,6 @@ class StateViewController : UIViewController, UIPickerViewDelegate, UIPickerView
                     let placemark = placemarks?.first
                     let lat = placemark?.location?.coordinate.latitude
                     let lon = placemark?.location?.coordinate.longitude
-                    print(lat)
-                    print(lon)
                     
                     RentalCarApp.location = CLLocationCoordinate2D(latitude: lat!, longitude: lon!)
                     newLocationSetFlag = true
