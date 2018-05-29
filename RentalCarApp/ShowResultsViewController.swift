@@ -17,17 +17,21 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
     var totalCars = 0
     var rentalDataArray: [(location: Location, address: Address, provider: Provider, cars: Cars)] = []
     var rowSelected = 0
-    var providerSet : Set<String> = []
-    var providerMap : [String: [Cars]] = [:]
+    var sortButtonPushedIndex : Int = 0
 
     
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var carTableView: UITableView!
+    @IBOutlet weak var sortButton: UIButton!
     @IBOutlet weak var totalCarsFoundLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        
+        // Initialize sort button pushed index
+        self.sortButtonPushedIndex = 0
+        
         loadingIndicator.hidesWhenStopped = true
         loadingIndicator.startAnimating()
         getSearchResults()
@@ -185,6 +189,89 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
     }
     
     // MARK: Actions
+    @IBAction func sortButtonPushed(_ sender: Any) {
+        
+        var buttonTitle = ""
+        
+        switch (self.sortButtonPushedIndex % 4) {
+            // Ascending
+            case 0:
+                buttonTitle = "SORTED BY ASCENDING PRICE"
+                self.rentalDataArray.sort(by: {sortRentalDataByAmount(provider1: $0.2, provider2: $1.2, car1: $0.3, car2: $1.3, ascending: true)})
+                break
+            // Descending
+            case 1:
+                buttonTitle = "SORTED BY DESCENDING PRICE"
+                self.rentalDataArray.sort(by: {sortRentalDataByAmount(provider1: $0.2, provider2: $1.2, car1: $0.3, car2: $1.3, ascending: false)})
+                break
+            // Vehicle Category
+            case 2:
+                buttonTitle = "SORTED BY CATEGORY"
+                self.rentalDataArray.sort(by: {sortRentalDataByCarCategory(provider1: $0.2, provider2: $1.2, car1: $0.3, car2: $1.3)})
+                break
+            // Company provider
+            case 3:
+                buttonTitle = "SORTED BY COMPANY"
+                self.rentalDataArray.sort(by: {sortRentalDataByCompany(provider1: $0.2, provider2: $1.2, car1: $0.3, car2: $1.3)})
+                break;
+            default:
+                self.carTableView.reloadData()
+        }
+        
+        self.sortButtonPushedIndex+=1
+        self.sortButton.setTitle(buttonTitle, for: .normal)
+        self.carTableView.reloadData()
+    }
+    
+    
+    // Helper function to sort results in ascending or descending estimated total price
+    func sortRentalDataByAmount(provider1: Provider, provider2: Provider, car1: Cars, car2: Cars, ascending: Bool) -> Bool
+    {
+        if let amount1 = car1.estimated_total?.amount {
+            if let amount2 = car2.estimated_total?.amount {
+                if let name1 = provider1.company_name {
+                    if let name2 = provider2.company_name {
+                        if (ascending) {
+                            return (amount1 == amount2 ? name1 < name2 : amount1.localizedStandardCompare(amount2) == .orderedAscending)
+                        }
+                        else {
+                            return (amount1 == amount2 ? name1 < name2 : amount1.localizedStandardCompare(amount2) == .orderedDescending)
+                        }
+                    }
+                }
+            }
+        }
+        return true
+    }
+    
+    func sortRentalDataByCarCategory(provider1: Provider, provider2: Provider, car1: Cars, car2: Cars) -> Bool
+    {
+        if let category1 = car1.vehicle_info?.category {
+            if let category2 = car2.vehicle_info?.category {
+                if let name1 = provider1.company_name {
+                    if let name2 = provider2.company_name {
+                        return (category1 == category2 ? name1 < name2 : category1.localizedStandardCompare(category2) == .orderedAscending)
+                    }
+                }
+            }
+        }
+        return true
+    }
+    
+    func sortRentalDataByCompany(provider1: Provider, provider2: Provider, car1: Cars, car2: Cars) -> Bool
+    {
+        if let amount1 = car1.estimated_total?.amount {
+            if let amount2 = car2.estimated_total?.amount {
+                if let name1 = provider1.company_name {
+                    if let name2 = provider2.company_name {
+                        return (name1 == name2 ? amount1 < amount2 : name1.localizedStandardCompare(name2) == .orderedAscending)
+                    }
+                }
+            }
+        }
+        return true
+    }
+    
     @IBAction func backButtonPushed(_ sender: Any) {
         if let navController = self.navigationController {
             for controller in navController.viewControllers {
@@ -220,26 +307,6 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
     
     // MARK: TableView
     
-     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if(!self.providerMap.isEmpty)
-        {
-            return Array(self.providerMap.keys)[section]
-        }
-        else
-        {
-            return "Type"
-        }
-    }
-        
-    func numberOfSectionsInTableView(in tableView: UITableView) -> Int {
-        if (self.providerSet.isEmpty) {
-            return 1
-        }
-        else {
-            return self.providerSet.count
-        }
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
             return self.totalCars
@@ -249,7 +316,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
         let cell = tableView.dequeueReusableCell(withIdentifier: "CarCell", for: indexPath)
         
         let row = indexPath.row
-        cell.textLabel?.text = self.rentalDataArray[row].cars.vehicle_info?.category
+        cell.textLabel?.text = (self.rentalDataArray[row].cars.vehicle_info?.category)! + " by " + (self.rentalDataArray[row].provider.company_name)!
         cell.detailTextLabel?.text = "$" + (self.rentalDataArray[row].cars.estimated_total?.amount)!
 
         return cell
@@ -281,11 +348,9 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
                 let json = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String : Array<[String: Any]>]
                 
                 if (json?["results"]) == nil  {
-
                     let alert = UIAlertController(title: "Error", message: "Could not find any results. Please try again.", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: {action in self.performSegue(withIdentifier: "HomeSegue", sender: self)}))
                     self.present(alert, animated: true)
-
                 }
                 
                 else
@@ -301,6 +366,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
                         let provider = Provider(json: eachBranch["provider"] as! [String : Any])
                         
                         let carArray = eachBranch["cars"] as! Array<[String:Any]>
+                        
                         for cars in carArray {
                             
                             // Increment car count
@@ -308,29 +374,22 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
                             
                             let carInfo = Cars(json: cars)
                             
+                            // Create rental data array
                             self.rentalDataArray.append((location: location!, address: address!, provider: provider!, cars: carInfo!))
                             
-                            var mapCarArray = self.providerMap[(provider?.company_name)!] ?? []
-                            mapCarArray.append(carInfo!)
-                            self.providerMap[(provider?.company_name)!!] = mapCarArray
+                            // By default, sort by company
+                            self.rentalDataArray.sort(by: {self.sortRentalDataByCompany(provider1: $0.2, provider2: $1.2, car1: $0.3, car2: $1.3)})
                         }
                         
-                        if (!self.providerSet.contains((provider?.company_name)!))
-                        {
-                            self.providerSet.insert((provider?.company_name)!)
-                        }
-                        
-
                     }
-
 
                     // Needs to be on main thread
                     DispatchQueue.main.async {
                         self.carTableView.reloadData()
                         self.loadingIndicator.stopAnimating()
                         self.totalCarsFoundLabel.text = "\(self.totalCars) CARS FOUND"
+                        self.sortButton.setTitle("SORTED BY COMPANY", for: .normal)
                     }
-
                 }
             }
             else
