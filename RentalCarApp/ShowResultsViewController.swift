@@ -19,7 +19,6 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
     var rowSelected = 0
     var sortButtonPushedIndex : Int = 0
 
-    
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var carTableView: UITableView!
     @IBOutlet weak var sortButton: UIButton!
@@ -28,12 +27,13 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
         // Initialize sort button pushed index
         self.sortButtonPushedIndex = 0
         
         loadingIndicator.hidesWhenStopped = true
         loadingIndicator.startAnimating()
+        
+        // Get results based off of user's settings
         getSearchResults()
         
         carTableView.delegate = self
@@ -93,7 +93,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
         }
     }
     
-    
+    // Rates properties
     struct Rates : Decodable {
         let price: Price?
         
@@ -188,7 +188,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
         }
     }
     
-    // MARK: Actions
+    // MARK: Sorting
     @IBAction func sortButtonPushed(_ sender: Any) {
         
         var buttonTitle = ""
@@ -244,6 +244,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
         return true
     }
     
+    // Helper function to sort by car category
     func sortRentalDataByCarCategory(provider1: Provider, provider2: Provider, car1: Cars, car2: Cars) -> Bool
     {
         if let category1 = car1.vehicle_info?.category {
@@ -258,6 +259,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
         return true
     }
     
+    // Helper function to sort by rental company
     func sortRentalDataByCompany(provider1: Provider, provider2: Provider, car1: Cars, car2: Cars) -> Bool
     {
         if let amount1 = car1.estimated_total?.amount {
@@ -302,13 +304,11 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
             carController.location.longitude = (self.rentalDataArray[self.rowSelected].location.longitude)!
             carController.dailyPrice = (self.rentalDataArray[self.rowSelected].cars.rates?.price?.amount)!
         }
-        
     }
     
     // MARK: TableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
             return self.totalCars
     }
     
@@ -316,6 +316,8 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
         let cell = tableView.dequeueReusableCell(withIdentifier: "CarCell", for: indexPath)
         
         let row = indexPath.row
+        
+        // Populate rental car data here
         cell.textLabel?.text = (self.rentalDataArray[row].cars.vehicle_info?.category)! + " by " + (self.rentalDataArray[row].provider.company_name)!
         cell.detailTextLabel?.text = "$" + (self.rentalDataArray[row].cars.estimated_total?.amount)!
 
@@ -327,7 +329,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
         
         self.rowSelected = indexPath.row
         
-        // Segue
+        // Segue to show details
         self.performSegue(withIdentifier: "ShowCarDetailsSegue", sender: self)
         
     }
@@ -336,6 +338,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
     
     func getSearchResults() {
         
+        // Parameters to request data
         let parameters : String! = "latitude=\(RentalCarApp.location.latitude)&longitude=\(RentalCarApp.location.longitude)&radius=\(RentalCarApp.radius)&pick_up=\(RentalCarApp.pickupDateAsString)&drop_off=\(RentalCarApp.dropoffDateAsString)"
         
         let urlString = apiRental + parameters
@@ -345,18 +348,21 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
         let dataTask = URLSession.shared.dataTask(with: URL.init(string: urlString)!) { (data, response, error) in
             if ((data) != nil)
             {
+                // Convert json to dictionary
                 let json = (try? JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String : Array<[String: Any]>]
                 
+                // Error, throw message
                 if (json?["results"]) == nil  {
                     let alert = UIAlertController(title: "Error", message: "Could not find any results. Please try again.", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: {action in self.performSegue(withIdentifier: "HomeSegue", sender: self)}))
                     self.present(alert, animated: true)
                 }
-                
+                // Useful data was returned
                 else
                 {
                     let branchesArray = json!["results"]
            
+                    // Traverse through each branch of results
                     for eachBranch in branchesArray!
                     {
                         let location = Location(json: eachBranch["location"] as! [String : Any])
@@ -367,6 +373,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
                         
                         let carArray = eachBranch["cars"] as! Array<[String:Any]>
                         
+                        // Traverse through each car option
                         for cars in carArray {
                             
                             // Increment car count
@@ -392,8 +399,7 @@ class ShowResultsViewController : UIViewController, UITableViewDataSource, UITab
                     }
                 }
             }
-            else
-            {
+            else {
             }
         }
         dataTask.resume()

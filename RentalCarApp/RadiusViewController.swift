@@ -41,21 +41,17 @@ class RadiusViewController : UIViewController {
         // Set global variable
         RentalCarApp.radius = milesToKilometers(miles: getValueFromSlider())
         
-        // Start search loading
-        
-        
         // After, segue to results
         self.performSegue(withIdentifier: "ShowResultsSegue", sender: self)
     }
     
-    func getValueFromSlider() -> String
-    {
+    func getValueFromSlider() -> String {
         let distanceValue = Int(distanceSlider.value)
         return distanceValue.description
     }
     
-    func milesToKilometers(miles: String) -> String
-    {
+    // Helper function to convert miles to km
+    func milesToKilometers(miles: String) -> String {
         let km = Int(Double(miles)! * 1.6)
         return km.description
     }

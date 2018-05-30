@@ -20,6 +20,8 @@ class PickUpDateViewController : UIViewController {
         let currentDate = Date()
         
         pickupDatePicker.datePickerMode = UIDatePickerMode.date
+
+        // Limit to today's current date
         pickupDatePicker.minimumDate = currentDate as Date
     }
     

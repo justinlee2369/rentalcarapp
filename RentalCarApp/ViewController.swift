@@ -12,12 +12,12 @@ import FacebookCore
 import FBSDKLoginKit
 
 class ViewController: UIViewController, FBSDKLoginButtonDelegate {
+    
+    // FB related
     var dict : [String : AnyObject]!
     var fbUserDataSet = false
-    var userDefaults = UserDefaults()
     let loginManager = FBSDKLoginManager()
 
-    
     @IBOutlet weak var activityIndicatorView: UIActivityIndicatorView!
     @IBOutlet weak var fbDescriptionLabel: UILabel!
     @IBOutlet weak var loginButton: FBSDKLoginButton!
@@ -29,7 +29,7 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
         
         self.navigationController?.isNavigationBarHidden = true
         
-        // FB
+        // FB configuration
         self.configureFacebook()
         activityIndicatorView.hidesWhenStopped = true
     }
@@ -39,15 +39,17 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
             // User is logged in, use 'accessToken' here
         }
         else {
+            // Unhide FB description when logged out
             self.fbDescriptionLabel.isHidden = false
         }
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
+    // If we segue to HomeVC, set view fields based off of FB data
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let identifier = segue.identifier {
             if (identifier == "HomeViewSegue" && self.fbUserDataSet == true) {
@@ -64,7 +66,6 @@ class ViewController: UIViewController, FBSDKLoginButtonDelegate {
         loginButton.readPermissions = ["public_profile", "email", "user_friends"];
         loginButton.delegate = self
     }
-    
     
     func getFBUserData(completion: @escaping (Bool) -> Void )
     {

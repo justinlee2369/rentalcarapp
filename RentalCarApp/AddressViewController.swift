@@ -18,6 +18,7 @@ class AddressViewController : UIViewController {
     }
     
     @IBAction func nextButtonPushed(_ sender: Any) {
+        // Redirect user to use skip button
         if (addressTextField.text == "") {
             let alert = UIAlertController(title: "Not sure what your address is?", message: "That's fine! Just select skip if you're unsure.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
@@ -30,6 +31,7 @@ class AddressViewController : UIViewController {
         }
     }
     
+    // Allow users to skip entering address in case they don't know exact location
     @IBAction func skipButtonPushed(_ sender: Any) {
         address = ""
         self.performSegue(withIdentifier: "SegueToCityView", sender: self)

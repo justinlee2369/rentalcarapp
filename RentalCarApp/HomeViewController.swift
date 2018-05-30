@@ -71,10 +71,24 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate, UINaviga
             }
         }
     }
+    
+    // Logout using FB login manager
+    @IBAction func signOutButtonPushed(_ sender: Any) {
+        if let navController = self.navigationController {
+            for controller in navController.viewControllers {
+                if controller is ViewController {
+                    let vc = controller as? ViewController
+                    vc?.loginManager.logOut()
+                    navController.popToViewController(controller, animated:true)
+                    break
+                }
+            }
+        }
+    }
+    
     @IBAction func findCarButtonPushed(_ sender: Any) {
         let pickupVC = self.storyboard?.instantiateViewController(withIdentifier: "PickUpDateViewController") as! PickUpDateViewController
         self.navigationController?.pushViewController(pickupVC, animated: true)
-//        self.getSearchResults()
     }
     
     @IBAction func changeLocationButtonPushed(_ sender: Any) {
@@ -146,19 +160,6 @@ class HomeViewController : UIViewController, CLLocationManagerDelegate, UINaviga
         }
         
         self.mapActivityIndicator.stopAnimating()
-    }
-    
-    @IBAction func signOutButtonPushed(_ sender: Any) {
-        if let navController = self.navigationController {
-            for controller in navController.viewControllers {
-                if controller is ViewController {
-                    let vc = controller as? ViewController
-                    vc?.loginManager.logOut()
-                    navController.popToViewController(controller, animated:true)
-                    break
-                }
-            }
-        }
     }
     
     func setFirstname(fname : String)

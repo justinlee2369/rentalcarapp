@@ -597,7 +597,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="5" minValue="5" maxValue="50" translatesAutoresizingMaskIntoConstraints="NO" id="j0S-h6-a2b">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="5" minValue="5" maxValue="60" translatesAutoresizingMaskIntoConstraints="NO" id="j0S-h6-a2b">
                                 <rect key="frame" x="14" y="287" width="347" height="30"/>
                                 <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -1056,6 +1056,7 @@
         <image name="jaguar.jpg" width="1249" height="2289"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="RMw-rX-sty"/>
         <segue reference="epp-yg-W7U"/>
     </inferredMetricsTieBreakers>
 </document>

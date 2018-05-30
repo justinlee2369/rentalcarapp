@@ -12,7 +12,9 @@ import UIKit
 class CityViewController : UIViewController {
     
     @IBOutlet weak var cityTextField: UITextField!
+    
     @IBAction func nextButtonPressed(_ sender: Any) {
+        // If text field is left blank, alert
         if (cityTextField.text == "") {
             let alert = UIAlertController(title: "", message: "City cannot be left blank.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
@@ -33,5 +35,6 @@ class CityViewController : UIViewController {
                 }
             }
         }
-    }
+    } 
+    
 }

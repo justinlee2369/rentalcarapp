@@ -20,6 +20,17 @@ class StateViewController : UIViewController, UIPickerViewDelegate, UIPickerView
     var stateSelected : String = ""
     var userSelectedFlag = false
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        stateSelector.delegate = self
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.stopAnimating()
+        
+        // Naturally choose California, makes the selector view more full
+        let defaultStateIndex = stateArray.index(of: "CALIFORNIA")!
+        stateSelector.selectRow(defaultStateIndex, inComponent: 0, animated: true)
+    }
+    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
@@ -30,16 +41,6 @@ class StateViewController : UIViewController, UIPickerViewDelegate, UIPickerView
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return stateArray[row]
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        stateSelector.delegate = self
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.stopAnimating()
-        
-        let defaultStateIndex = stateArray.index(of: "California")!
-        stateSelector.selectRow(defaultStateIndex, inComponent: 0, animated: true)
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent  component: Int) {

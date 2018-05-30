@@ -13,20 +13,21 @@ import MapKit
 
 class CarDetailsViewController : UIViewController {
     
+    // Rental logistics
     var vehicleCategory: String = ""
     var dailyPrice : String = ""
     var totalPrice: String = ""
     var companyName: String = ""
     
+    // Location data
     var addressStreet: String = ""
     var city: String = ""
-    
     var location = CLLocationCoordinate2D()
     
+    // Car features
     var transmission: String = ""
     var bodyStyle: String = ""
     var fuel: String = ""
-
     var airConditioning : Int = 1
         
     // MARK: IBOutlets
@@ -46,6 +47,8 @@ class CarDetailsViewController : UIViewController {
         self.setViewComponents()
     }
     
+    // MARK: Actions
+    
     @IBAction func backButtonPushed(_ sender: Any) {
         if let navController = self.navigationController {
             for controller in navController.viewControllers {
@@ -57,6 +60,7 @@ class CarDetailsViewController : UIViewController {
         }
     }
     
+    // Get user directions from current location to chosen rental center
     @IBAction func navigateButtonPushed(_ sender: Any) {
         let coordinate = CLLocationCoordinate2DMake(self.location.latitude, self.location.longitude)
         let mapItem = MKMapItem(placemark: MKPlacemark(coordinate: coordinate, addressDictionary:nil))
@@ -64,6 +68,7 @@ class CarDetailsViewController : UIViewController {
         mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeDriving])
     }
     
+    // Helper function to setup view
     func setViewComponents() {
         self.categoryLabel.text = vehicleCategory
         self.priceLabel.text = "$\(totalPrice)"

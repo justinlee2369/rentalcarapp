@@ -16,8 +16,9 @@ class DropOffDateViewController : UIViewController {
     var pickupDate = Date()
     
     override func viewDidLoad() {
-        
         dropOffDatePicker.datePickerMode = UIDatePickerMode.date
+        
+        // Min date can't be less than pickup date
         dropOffDatePicker.minimumDate = pickupDate as Date
     }
     
@@ -26,7 +27,7 @@ class DropOffDateViewController : UIViewController {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         RentalCarApp.dropoffDateAsString = dateFormatter.string(from: self.dropOffDatePicker.date)
         
-        // Segue
+        // Segue to distance selector
         self.performSegue(withIdentifier: "ShowRadiusSegue", sender: self)
     }
     
